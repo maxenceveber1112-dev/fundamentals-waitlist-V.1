@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundamental - Préparez Votre Lancement Financier</title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <!--
+      NOTE IMPORTANTE :
+      Ce fichier est une version améliorée du code de la page d'attente (waitlist) fourni
+      par l'utilisateur. Les améliorations apportées sont purement fonctionnelles et ne
+      modifient pas l'interface visuelle. Elles visent à rendre l'expérience utilisateur
+      plus fiable et conviviale, notamment en conservant l'état de l'inscription entre
+      les rechargements de page et en améliorant l'accessibilité des composants.
+    -->
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+
+        /* NOUVEAU: Micro-interaction Bonton Click */
+        .btn-click-effect { transition: transform 0.1s ease-out; }
+        .btn-click-effect:active { transform: scale(0.97); }
+        /* FIN NOUVEAU */
+
+        /* NOUVEAU: Micro-interaction Header Scroll */
+        header {
+            transition: padding 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+        header.scrolled {
+            padding-top: 0.75rem; /* py-3 */
+            padding-bottom: 0.75rem; /* py-3 */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        /* FIN NOUVEAU */
+
+        .gradient-text { background: linear-gradient(90deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .feature-card { transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out; }
+        .feature-card:hover { transform: translateY(-8px); border-color: #a78bfa; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .feature-icon { transition: transform 0.3s ease-out; }
+        .feature-card:hover .feature-icon { transform: scale(1.1) rotate(-5deg); }
+        .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .animate-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+        .animate-on-scroll.delay-1 { transition-delay: 0.1s; }
+        .animate-on-scroll.delay-2 { transition-delay: 0.2s; }
+        .animate-on-scroll.delay-3 { transition-delay: 0.3s; }
+        .animate-on-scroll.delay-4 { transition-delay: 0.4s; }
+        #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.5; /* Reduced opacity */ }
+        .loader { width: 40px; height: 40px; position: relative; }
+        .loader::before, .loader::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; }
+        .loader::before { width: 100%; height: 100%; background-color: rgba(129, 140, 248, 0.2); animation: pulse 1.5s infinite ease-out; }
+        .loader::after { width: 15px; height: 15px; background-color: #818cf8; }
+        @keyframes pulse { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; } }
+        .loading-text { animation: text-fade 1.5s infinite ease-in-out alternate; }
+        @keyframes text-fade { from { opacity: 0.7; } to { opacity: 1; } }
+
+        /* Nouveaux styles pour la section interactive */
+        .feature-tab-btn { transition: all 0.2s ease-in-out; border-left: 4px solid #334155; /* border-slate-700 */ }
+        .feature-tab-btn:hover { background-color: rgba(129, 140, 248, 0.1); /* bg-indigo-600/10 */ border-left-color: #6366f1; /* border-indigo-500 */ }
+        .feature-tab-btn.active { background-color: rgba(129, 140, 248, 0.15); /* bg-indigo-600/15 */ border-left-color: #c084fc; /* border-purple-400 */ transform: translateX(4px); color: white; }
+        .feature-content { display: none; animation: fadeIn 0.5s ease-in-out; }
+        .feature-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .mockup-window { background-color: #1e293b; /* bg-slate-800 */ border: 1px solid #334155; /* border-slate-700 */ border-radius: 0.5rem; /* rounded-lg */ padding: 1.5rem; /* p-6 */ box-shadow: 0 10px 20px rgba(0,0,0,0.3); min-height: 300px; }
+        /* NOUVEAU: Style pour les onglets Mission/Fondateur */
+        .mission-tab-btn { padding: 0.5rem 1rem; font-weight: 600; color: #94a3b8; /* text-slate-400 */ border-bottom: 2px solid transparent; transition: all 0.2s ease-out; }
+        .mission-tab-btn:hover { color: white; }
+        .mission-tab-btn.active { color: white; border-bottom-color: #c084fc; /* border-purple-400 */ }
+        /* FIN NOUVEAU */
+
+        /* NOUVEAU: Style pour les boutons de segmentation */
+        .segment-button { background-color: #1e293b; /* bg-slate-800 */ border: 1px solid #334155; /* border-slate-700 */ transition: transform 0.2s ease-out, border-color 0.2s ease-out, background-color 0.2s ease-out; }
+        .segment-button:hover { transform: translateY(-3px); border-color: #818cf8; /* indigo-400 */ background-color: #29374d; }
+        /* FIN NOUVEAU */
+
+        /* Nouveaux styles pour la FAQ */
+        details.faq-item { background-color: #1e293b; /* bg-slate-800 */ border: 1px solid #334155; /* border-slate-700 */ border-radius: 0.5rem; /* rounded-lg */ overflow: hidden; transition: background-color 0.2s ease-out; }
+        details.faq-item[open] { background-color: #29374d; /* un peu plus clair */ }
+        details.faq-item summary { list-style: none; /* Hide default marker */ cursor: pointer; padding: 1.5rem; /* p-6 */ font-weight: 600; /* font-semibold */ display: flex; justify-content: space-between; align-items: center; transition: background-color 0.2s ease-out; }
+        details.faq-item:not([open]) summary:hover { background-color: #29374d; /* Même couleur que 'open' pour le hover */ }
+        details.faq-item summary::-webkit-details-marker { display: none; /* Hide default marker for Safari */ }
+        details.faq-item .faq-arrow { transition: transform 0.2s ease-in-out; color: #818cf8; /* text-indigo-400 */ }
+        details[open].faq-item .faq-arrow { transform: rotate(90deg); }
+        details.faq-item .faq-content { padding: 0 1.5rem 1.5rem 1.5rem; /* px-6 pb-6 */ color: #94a3b8; /* text-slate-400 */ border-top: 1px solid #334155; /* border-slate-700 */ margin: 0 1.5rem; /* mx-6 */ padding-top: 1.5rem; /* pt-6 */ }
+        /* Fin des nouveaux styles FAQ */
+
+        /* NOUVEAU: Effet "Glow" Curseur */
+        #cursor-glow { position: fixed; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, rgba(168, 85, 247, 0) 55%); pointer-events: none; z-index: 999; transform: translate(-50%, -50%); transition: left 0.15s linear, top 0.15s linear, opacity 0.3s ease-out; opacity: 0; will-change: left, top; }
+        @media (pointer: coarse) { #cursor-glow { display: none; } }
+        /* Fin NOUVEAU: Effet "Glow" Curseur */
+
+        /* NOUVEAU: Animations Mockups */
+        #mastery-bar { width: 0%; transition: width 1s cubic-bezier(0.25, 1, 0.5, 1) 0.3s; /* Délai pour le fade-in du panneau */ }
+        .feature-content.active #mastery-bar { width: 60%; }
+        #budget-circle-1 { stroke-dashoffset: 251.32; /* (2*PI*40) = Complètement vide */ transition: stroke-dashoffset 1s cubic-bezier(0.25, 1, 0.5, 1) 0.3s; }
+        .feature-content.active #budget-circle-1 { stroke-dashoffset: 0; /* Valeur d'origine pour 60% */ }
+        #budget-circle-2 { stroke-dashoffset: 251.32; /* Complètement vide */ transition: stroke-dashoffset 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.5s; /* Délai décalé */ }
+        .feature-content.active #budget-circle-2 { stroke-dashoffset: -150.79; /* Valeur d'origine pour 30% */ }
+        /* Fin NOUVEAU: Animations Mockups */
+    </style>
+
+    <!-- NOUVEAU: Scripts Firebase -->
+    <script type="module">
+        // Importer les fonctions nécessaires
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Initialisation de Firebase ---
+        let db, auth;
+        let appId = 'default-app-id'; // Valeur par défaut
+
+        try {
+            // Ces variables (__firebase_config, __app_id, __initial_auth_token)
+            // sont injectées par l'environnement d'exécution.
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+            appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            setLogLevel('Debug'); // Active les logs pour le débogage
+
+            // Connexion (anonyme ou via token)
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+            console.log("Firebase initialisé et authentifié.", auth.currentUser ? auth.currentUser.uid : 'non connecté');
+
+            // Exposer la fonction d'ajout à la liste d'attente
+            window.addToWaitlist = async (email) => {
+                if (!db) {
+                    console.error("Firestore n'est pas initialisé.");
+                    throw new Error("La base de données n'est pas prête.");
+                }
+                // Chemin de la collection publique pour la liste d'attente
+                const waitlistCollectionPath = `artifacts/${appId}/public/data/waitlist`;
+                console.log(`Ajout de ${email} à ${waitlistCollectionPath}`);
+                try {
+                    const docRef = await addDoc(collection(db, waitlistCollectionPath), {
+                        email: email,
+                        createdAt: serverTimestamp() // Utilise l'heure du serveur
+                    });
+                    console.log("Document écrit avec ID: ", docRef.id);
+                    return docRef.id; // NOUVEAU: Retourne l'ID pour la segmentation
+                } catch (e) {
+                    console.error("Erreur lors de l'ajout du document: ", e);
+                    throw e; // Propage l'erreur pour la gérer dans le formulaire
+                }
+            };
+
+            // NOUVEAU: Exposer la fonction de mise à jour pour la segmentation
+            window.updateWaitlistSegment = async (docId, segment) => {
+                if (!db || !docId || !segment) {
+                    console.error("Firestore, docId, ou segment manquant.");
+                    return; // Ne pas planter s'il manque des infos
+                }
+                const waitlistDocRef = doc(db, `artifacts/${appId}/public/data/waitlist`, docId);
+                console.log(`Mise à jour du document ${docId} avec le segment: ${segment}`);
+                try {
+                    await updateDoc(waitlistDocRef, {
+                        segment: segment,
+                        segmentAddedAt: serverTimestamp()
+                    });
+                    console.log("Document mis à jour avec succès.");
+                } catch (e) {
+                    console.error("Erreur lors de la mise à jour du document: ", e);
+                    // Ne pas propager l'erreur, ce n'est pas critique pour l'utilisateur
+                }
+            };
+
+        } catch (e) {
+            console.error("Erreur lors de l'initialisation de Firebase: ", e);
+            // Crée une fonction 'stub' pour que le reste de la page ne plante pas
+            window.addToWaitlist = () => {
+                console.error("Firebase a échoué. L'inscription n'est pas possible.");
+                return Promise.reject(new Error("Erreur de connexion à la base de données."));
+            };
+            // NOUVEAU: Stub pour la fonction de mise à jour
+            window.updateWaitlistSegment = () => {
+                console.error("Firebase a échoué. La mise à jour n'est pas possible.");
+                return Promise.resolve();
+            };
+        }
+    </script>
+    <!-- FIN NOUVEAU -->
+
+</head>
+<body class="bg-slate-900 text-white">
+
+    <!-- NOUVEAU: Effet "Glow" -->
+    <div id="cursor-glow"></div>
+
+    <!-- Header -->
+    <header id="main-header" class="bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50 border-b border-slate-800">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <span class="text-2xl font-bold gradient-text">Fundamental</span>
+            <a href="#signup" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg transition transform hover:scale-105 btn-click-effect">Rejoindre l'accès anticipé</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative py-16 md:py-24 overflow-hidden">
+        <canvas id="hero-canvas"></canvas> <!-- Canvas for background effect -->
+        <div class="relative container mx-auto px-6 text-center z-10">
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 animate-on-scroll is-visible">L'éducation financière,<br><span class="gradient-text">simple, ludique, pour vous.</span></h1>
+            <p class="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto mb-8 animate-on-scroll is-visible delay-1">Fundamental arrive bientôt pour transformer votre rapport à l'argent. Apprenez à gérer, épargner et investir grâce à une approche personnalisée et engageante.</p>
+            <div class="max-w-md mx-auto animate-on-scroll is-visible delay-2">
+                <!-- NOUVEAU: Proposition de valeur claire -->
+                <div class="bg-slate-800/50 border border-slate-700/70 rounded-lg p-5 mb-6 text-left">
+                    <p class="text-sm font-semibold text-white mb-3">En rejoignant l'accès anticipé, vous recevez :</p>
+                    <ul class="space-y-2.5">
+                        <li class="flex items-start animate-on-scroll delay-3">
+                            <svg class="w-5 h-5 text-green-400 mr-2.5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                            <span class="text-sm text-slate-300"><strong class="text-white">L'accès immédiat</strong> à notre module découverte "Les 3 Piliers d'un Budget Sain".</span>
+                        </li>
+                        <li class="flex items-start animate-on-scroll delay-4">
+                            <svg class="w-5 h-5 text-green-400 mr-2.5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                            <span class="text-sm text-slate-300"><strong class="text-white">1 mois de Mode PRO offert</strong> lors du lancement officiel.</span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- FIN NOUVEAU -->
+                <form id="signup-form-hero">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <input type="email" id="email-hero" class="w-full flex-grow bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Votre adresse e-mail" required aria-label="Adresse e-mail">
+                        <button type="submit" id="submit-hero" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition whitespace-nowrap btn-click-effect" disabled>Rejoindre l'accès anticipé</button>
+                    </div>
+                    <div class="flex items-center space-x-3 mt-4 text-left">
+                        <input type="checkbox" id="terms-hero" name="terms" class="w-4 h-4 text-indigo-600 bg-slate-700 border-slate-600 rounded focus:ring-indigo-500 focus:ring-2 cursor-pointer" aria-label="Accepter de recevoir des e-mails de mise à jour">
+                        <label for="terms-hero" class="text-sm text-slate-400 cursor-pointer">
+                            J'accepte de recevoir des e-mails de mise à jour et d'être prévenu du lancement.
+                        </label>
+                    </div>
+                </form>
+                <div id="signup-success-hero" class="hidden mt-4 p-4 bg-slate-800 border border-slate-700 rounded-lg text-sm text-center">
+                    <!-- NOUVEAU: Call-to-Action vers le module -->
+                    <h4 class="font-bold text-lg text-green-300 mb-2">Bienvenue ! ✨</h4>
+                    <!-- NOUVEAU: Validation de Segment (Preuve Sociale) -->
+                    <div class="social-proof-text text-sm text-indigo-200 mb-4"></div>
+                    <!-- FIN NOUVEAU -->
+                    <p class="text-slate-300 mb-4">Votre accès est confirmé. En attendant le lancement, commencez votre parcours avec notre module découverte gratuit :</p>
+                    <p class="font-semibold text-white mb-4">"Les 3 Piliers d'un Budget Sain"</p>
+                    <a href="/module-decouverte" target="_blank" rel="noopener noreferrer" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition btn-click-effect mb-6">
+                        Commencer le module
+                    </a>
+                    <hr class="border-slate-700 mb-4">
+                    <p class="text-slate-400 mb-4">Aidez-nous à passer le mot !</p>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="linkedin-share-btn flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                            <span>Partager</span>
+                        </a>
+                        <button type="button" id="copy-link-hero" class="copy-link-btn flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-4 rounded-lg transition">
+                            Copier le lien
+                        </button>
+                    </div>
+                </div>
+                <!-- NOUVEAU: Étape de segmentation -->
+                <div id="signup-segment-hero" class="hidden mt-4 p-4 bg-slate-800 border border-slate-700 rounded-lg text-sm">
+                    <h4 class="font-bold text-lg text-white mb-1">Merci pour votre inscription !</h4>
+                    <p class="text-slate-400 mb-4">Une dernière étape : qui êtes-vous ?</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button class="segment-button text-left p-3 rounded-lg" data-segment="student">🎓 Étudiant</button>
+                        <button class="segment-button text-left p-3 rounded-lg" data-segment="team">👥 Équipe d'entreprise</button>
+                        <button class="segment-button text-left p-3 rounded-lg" data-segment="young-active">💼 Jeune Actif</button>
+                        <button class="segment-button text-left p-3 rounded-lg" data-segment="freelance">💻 Freelance</button>
+                    </div>
+                </div>
+                <div id="signup-loading-hero" class="hidden mt-4 flex items-center justify-center gap-2 text-slate-400">
+                    <div class="loader !w-5 !h-5"></div>
+                    <span class="loading-text">Enregistrement...</span>
+                </div>
+            </div>
+        </div>
+        <!-- NOUVEL AJOUT: Indicateur de défilement -->
+        <a href="#solution" class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 text-slate-500 hover:text-indigo-400 transition-colors animate-bounce" aria-label="Défiler pour voir la suite">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </a>
+        <!-- FIN NOUVEL AJOUT -->
+    </section>
+
+    <!-- Solution/Features Section -->
+    <section id="solution" class="py-20 bg-slate-800/50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16 max-w-3xl mx-auto animate-on-scroll">
+                <h2 class="text-3xl md:text-4xl font-bold">Plongez au cœur de l'expérience</h2>
+                <p class="text-slate-400 mt-4">Fundamental n'est pas qu'une simple app. C'est un écosystème complet conçu pour vous accompagner à chaque étape de votre vie financière. Découvrez comment.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+                <!-- Navigation des fonctionnalités (Tabs) -->
+                <div class="md:col-span-4 lg:col-span-3 animate-on-scroll delay-1">
+                    <div id="interactive-features-nav" class="flex flex-col space-y-2 sticky top-24">
+                        <button class="feature-tab-btn active text-left w-full px-6 py-4 rounded-r-lg text-slate-300" data-feature-target="feature-plan">
+                            <span class="font-bold text-lg text-white">Parcours Personnalisé</span>
+                            <span class="text-sm block">Quiz initial et plan d'action IA.</span>
+                        </button>
+                        <button class="feature-tab-btn text-left w-full px-6 py-4 rounded-r-lg text-slate-300" data-feature-target="feature-lessons">
+                            <span class="font-bold text-lg text-white">Cours Interactifs</span>
+                            <span class="text-sm block">Quiz, XP et difficulté adaptative.</span>
+                        </button>
+                        <button class="feature-tab-btn text-left w-full px-6 py-4 rounded-r-lg text-slate-300" data-feature-target="feature-tools">
+                            <span class="font-bold text-lg text-white">Outils Pratiques IA</span>
+                            <span class="text-sm block">Budget, Projet, Retraite, Négociation.</span>
+                        </button>
+                        <button class="feature-tab-btn text-left w-full px-6 py-4 rounded-r-lg text-slate-300" data-feature-target="feature-simulator">
+                            <span class="font-bold text-lg text-white">Simulateur de Vie</span>
+                            <span class="text-sm block">Apprenez par les conséquences.</span>
+                        </button>
+                        <button class="feature-tab-btn text-left w-full px-6 py-4 rounded-r-lg text-slate-300" data-feature-target="feature-paths">
+                            <span class="font-bold text-lg text-white">Parcours de Vie Guidés</span>
+                            <span class="text-sm block">Achat immobilier, Investissement...</span>
+                        </button>
+                        <button class="feature-tab-btn text-left w-full px-6 py-4 rounded-r-lg text-slate-300" data-feature-target="feature-pro">
+                            <span class="font-bold text-lg text-white">Mode PRO</span>
+                            <span class="text-sm block">Générez vos propres cours.</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Contenu des fonctionnalités -->
+                <div class="md:col-span-8 lg:col-span-9 animate-on-scroll delay-2">
+                    <div id="interactive-features-content" class="relative">
+                        <!-- 1. Plan Personnalisé -->
+                        <div id="feature-plan" class="feature-content active">
+                            <h3 class="text-2xl font-bold mb-4">Commencez par un plan sur mesure</h3>
+                            <p class="text-slate-400 mb-6">Plutôt que de vous noyer dans l'information, Fundy vous guide. Un quiz initial rapide évalue votre profil, vos objectifs et votre niveau. L'IA génère ensuite un plan d'action personnalisé, rien que pour vous.</p>
+                            <p class="font-semibold text-purple-300 mb-6">Offre une expérience sur mesure dès le départ, rendant l'apprentissage plus pertinent et motivant.</p>
+                            <div class="mockup-window">
+                                <h4 class="font-semibold text-lg mb-4">Aperçu : Votre Quiz Initial</h4>
+                                <div class="bg-slate-700/50 p-6 rounded-lg">
+                                    <p class="text-xl font-bold mb-6">Quel est votre objectif principal ?</p>
+                                    <div class="space-y-3">
+                                        <div class="quiz-option text-left p-4 bg-slate-800 border-2 border-slate-700 rounded-lg opacity-80"><strong>Mieux gérer mon budget</strong><br><span class="text-sm text-slate-400">Finir le mois sereinement.</span></div>
+                                        <div class="quiz-option text-left p-4 bg-slate-800 border-2 border-indigo-500 rounded-lg scale-105 shadow-lg"><strong>Créer une épargne</strong><br><span class="text-sm text-slate-400">Pour les imprévus ou un projet.</span></div>
+                                        <div class="quiz-option text-left p-4 bg-slate-800 border-2 border-slate-700 rounded-lg opacity-80"><strong>Commencer à investir</strong><br><span class="text-sm text-slate-400">Dynamiser mon épargne.</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 2. Cours Interactifs -->
+                        <div id="feature-lessons" class="feature-content">
+                            <h3 class="text-2xl font-bold mb-4">Apprenez en faisant, pas en lisant</h3>
+                            <p class="text-slate-400 mb-6">Oubliez les longs articles. L'apprentissage se fait via un système de questions/réponses générées par l'IA. Gagnez de l'XP, remplissez votre barre de maîtrise, et si c'est trop dur, demandez à Fundy de simplifier !</p>
+                            <p class="font-semibold text-purple-300 mb-6">Rend l'apprentissage actif, engageant et mesurable. Gagnez de l'XP, montez en niveau et testez-vous avec des "Bonus Rounds" difficiles.</p>
+                            <div class="mockup-window">
+                                <h4 class="font-semibold text-lg mb-4">Aperçu : Votre Leçon</h4>
+                                <div class="mb-4">
+                                    <div class="flex justify-between text-sm font-semibold text-slate-400 mb-1"><span>Maîtrise du chapitre</span><span>60%</span></div>
+                                    <!-- MODIFIÉ: barre de maîtrise animée -->
+                                    <div class="w-full bg-slate-700 rounded-full h-4">
+                                        <div id="mastery-bar" class="bg-green-500 h-4 rounded-full"></div>
+                                    </div>
+                                    <!-- FIN MODIFICATION -->
+                                </div>
+                                <div class="bg-slate-700/50 p-6 rounded-lg">
+                                    <p class="text-xl font-semibold mb-6">Qu'est-ce qu'un ETF (Tracker) ?</p>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="answer-option text-left p-3 bg-slate-800 border-2 border-slate-700 rounded-lg opacity-80">Une action individuelle</div>
+                                        <div class="answer-option text-left p-3 bg-slate-800 border-2 border-slate-700 rounded-lg opacity-80">Une obligation d'état</div>
+                                        <div class="answer-option text-left p-3 bg-slate-800 border-2 border-slate-700 rounded-lg opacity-80">Un type de cryptomonnaie</div>
+                                        <div class="answer-option text-left p-3 bg-slate-800 border-2 border-slate-700 rounded-lg opacity-80">Un panier d'actions diversifié</div>
+                                    </div>
+                                    <button class="mt-4 text-sm text-indigo-400 hover:text-indigo-300 transition font-semibold">✨ Expliquer plus simplement</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 3. Outils Pratiques -->
+                        <div id="feature-tools" class="feature-content">
+                            <h3 class="text-2xl font-bold mb-4">Passez de la théorie à la pratique</h3>
+                            <p class="text-slate-400 mb-6">Fundamental intègre des outils concrets, tous assistés par Fundy. Analysez votre budget, planifiez un projet, simulez votre retraite ou préparez une négociation salariale. L'IA vous donne des conseils personnalisés à chaque étape.</p>
+                            <p class="font-semibold text-purple-300 mb-6">Des outils concrets et des analyses IA pour appliquer ce que vous avez appris à votre propre vie financière.</p>
+                            <div class="mockup-window">
+                                <h4 class="font-semibold text-lg mb-4">Aperçu : Budget Planner</h4>
+                                <div class="flex gap-6">
+                                    <div class="w-1/3 flex items-center justify-center">
+                                        <svg class="w-full h-auto" viewBox="0 0 100 100">
+                                            <circle cx="50" cy="50" r="40" fill="transparent" stroke="#334155" stroke-width="15"></circle>
+                                            <!-- MODIFIÉ: Cercle 1 animé -->
+                                            <circle id="budget-circle-1" cx="50" cy="50" r="40" fill="transparent" stroke="#818cf8" stroke-width="15" stroke-dasharray="150.79 251.32" transform="rotate(-90 50 50)"></circle> <!-- 60% -->
+                                            <!-- MODIFIÉ: Cercle 2 animé -->
+                                            <circle id="budget-circle-2" cx="50" cy="50" r="40" fill="transparent" stroke="#c084fc" stroke-width="15" stroke-dasharray="75.39 251.32" transform="rotate(-90 50 50)"></circle> <!-- 30% -->
+                                        </svg>
+                                    </div>
+                                    <div class="w-2/3">
+                                        <h5 class="font-semibold">Analyse de Fundy :</h5>
+                                        <p class="text-sm text-slate-400 mt-2 mb-4">"Votre répartition est saine (60% besoins, 30% envies). Vous avez une capacité d'épargne de <strong>250€/mois</strong>. Voici 2 pistes pour l'optimiser..."</p>
+                                        <div class="text-sm space-y-2">
+                                            <p><span class="inline-block w-3 h-3 rounded-full bg-indigo-400 mr-2"></span>Besoins (60%)</p>
+                                            <p><span class="inline-block w-3 h-3 rounded-full bg-purple-400 mr-2"></span>Envies (30%)</p>
+                                            <p><span class="inline-block w-3 h-3 rounded-full bg-slate-600 mr-2"></span>Épargne (10%)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 4. Simulateur de Vie -->
+                        <div id="feature-simulator" class="feature-content">
+                            <h3 class="text-2xl font-bold mb-4">L'école de la vie, sans les risques</h3>
+                            <p class="text-slate-400 mb-6">Que faites-vous si votre voiture tombe en panne et que vous n'avez pas d'épargne ? L'IA génère des scénarios financiers réalistes et vous devez faire un choix. Vous découvrez ensuite les conséquences à court et long terme de votre décision.</p>
+                            <p class="font-semibold text-purple-300 mb-6">Expérimentez la prise de décision financière et apprenez par les conséquences, le tout dans un environnement 100% sécurisé.</p>
+                            <div class="mockup-window">
+                                <h4 class="font-semibold text-lg mb-4">Aperçu : Situation Mystère</h4>
+                                <div class="bg-slate-700/50 p-6 rounded-lg">
+                                    <p class="italic text-slate-400 mb-4">"Votre voiture tombe en panne. Le garagiste annonce 800€ de réparations. Vous n'avez que 200€ sur votre compte courant..."</p>
+                                    <p class="text-xl font-semibold mb-6">Que faites-vous ?</p>
+                                    <div class="space-y-3">
+                                        <div class="sim-option text-left p-3 bg-slate-800 border-2 border-slate-700 rounded-lg opacity-80">Utiliser le découvert bancaire.</div>
+                                        <div class="sim-option text-left p-3 bg-slate-800 border-2 border-slate-700 rounded-lg opacity-80">Prendre un micro-crédit rapide.</div>
+                                        <div class="sim-option text-left p-3 bg-slate-800 border-2 border-slate-700 rounded-lg opacity-80">Demander à un proche et étaler.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 5. Parcours de Vie -->
+                        <div id="feature-paths" class="feature-content">
+                            <h3 class="text-2xl font-bold mb-4">Vos grands projets, décodés</h3>
+                            <p class="text-slate-400 mb-6">Acheter un bien immobilier ou comprendre les ETF vous semble être une montagne ? Nos "Parcours de Vie Guidés" découpent ces projets complexes en étapes claires. Ils combinent informations, listes d'étapes et simulateurs dédiés.</p>
+                            <p class="font-semibold text-purple-300 mb-6">Une feuille de route claire et des outils adaptés pour vous guider dans les moments financiers les plus importants de votre vie.</p>
+                            <div class="mockup-window">
+                                <h4 class="font-semibold text-lg mb-4">Aperçu : Parcours Achat Immobilier</h4>
+                                <div class="bg-slate-700/50 p-6 rounded-lg">
+                                    <h5 class="font-semibold mb-4">Étape 1 : Définir son budget</h5>
+                                    <p class="text-slate-400 mb-4 text-sm">Avant de visiter, simulez votre capacité d'emprunt réelle.</p>
+                                    <button class="w-full bg-indigo-600/50 text-indigo-300 font-semibold py-2 px-4 rounded-lg">Ouvrir le Simulateur de Prêt</button>
+                                    <h5 class="font-semibold mt-6 mb-4">Check-list des étapes :</h5>
+                                    <ul class="space-y-2 text-sm">
+                                        <li class="flex items-center text-green-400"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Simuler la capacité d'emprunt</li>
+                                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Négocier avec les banques</li>
+                                        <li class="flex items-center"><svg class="w-5 h-5 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Comprendre les frais de notaire</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 6. Mode PRO -->
+                        <div id="feature-pro" class="feature-content">
+                            <h3 class="text-2xl font-bold mb-4">Devenez un expert (Mode PRO)</h3>
+                            <p class="text-slate-400 mb-6">Pour les utilisateurs avancés ou curieux, le Mode PRO (sur invitation) vous permet de définir n'importe quel sujet financier. L'IA génère alors un plan d'apprentissage complet en 4 chapitres, avec les concepts clés à maîtriser.</p>
+                            <p class="font-semibold text-purple-300 mb-6">Une personnalisation ultime pour ceux qui veulent aller plus loin et maîtriser des sujets financiers de niche ou complexes.</p>
+                            <div class="mockup-window">
+                                <h4 class="font-semibold text-lg mb-4">Aperçu : Générateur PRO</h4>
+                                <div class="bg-slate-700/50 p-6 rounded-lg">
+                                    <label class="block text-sm font-medium text-slate-300 mb-2">Quel sujet voulez-vous maîtriser ?</label>
+                                    <input type="text" value="Formation d'équipe : Gérer ses primes de fin d'année" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white" disabled>
+                                    <button class="mt-4 w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg transition">Générer mon parcours ✨</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NOUVEAU: Section "Notre Mission" -->
+    <section id="mission" class="py-20 bg-slate-800/50">
+        <div class="container mx-auto px-6 max-w-3xl text-center">
+            <div class="animate-on-scroll">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6">Notre Mission</h2>
+                <!-- NOUVEAU: Onglets Mission / Fondateur -->
+                <div class="flex justify-center gap-4 mb-8">
+                    <button id="mission-tab" class="mission-tab-btn active btn-click-effect">Notre Mission</button>
+                    <button id="founder-tab" class="mission-tab-btn btn-click-effect">Note du Fondateur</button>
+                </div>
+                <!-- Contenu 1: Mission -->
+                <div id="mission-content" class="feature-content active">
+                    <div class="border-l-4 border-purple-400 pl-6 text-left">
+                        <p class="text-xl md:text-2xl font-semibold italic text-slate-300 leading-relaxed">"Nous croyons que la maîtrise financière ne devrait pas être un privilège. Notre mission est de décomposer les barrières, de transformer le jargon complexe en savoir actionnable et de donner à chacun la confiance nécessaire pour bâtir son avenir financier. Sans peur, sans jugement."</p>
+                    </div>
+                    <p class="text-lg text-indigo-300 font-semibold mt-6">- L'équipe Fundamental</p>
+                </div>
+                <!-- Contenu 2: Fondateur -->
+                <div id="founder-content" class="feature-content">
+                    <div class="border-l-4 border-indigo-400 pl-6 text-left">
+                        <p class="text-xl md:text-2xl font-semibold italic text-slate-300 leading-relaxed">"J'ai créé Fundamental après [votre histoire en 1 phrase]. Mon but n'est pas de vous rendre riche, mais de vous donner la confiance et les outils que j'aurais aimé avoir pour commencer le mien. C'est un parcours que l'on fait ensemble."</p>
+                    </div>
+                    <p class="text-lg text-indigo-300 font-semibold mt-6">- [Votre Nom], Fondateur</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- FIN NOUVEAU -->
+
+    <!-- NOUVEAU: Section FAQ -->
+    <section id="faq" class="py-20">
+        <div class="container mx-auto px-6 max-w-3xl">
+            <div class="text-center mb-12 max-w-3xl mx-auto animate-on-scroll">
+                <h2 class="text-3xl md:text-4xl font-bold">Vos questions, nos réponses</h2>
+                <p class="text-slate-400 mt-4">Tout ce que vous voulez savoir avant le lancement.</p>
+            </div>
+            <div class="space-y-4 animate-on-scroll delay-1">
+                <!-- Question 1 -->
+                <details class="faq-item">
+                    <summary>
+                        <span>Quand le lancement est-il prévu ?</span>
+                        <svg class="w-6 h-6 faq-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </summary>
+                    <div class="faq-content">Nous finalisons les derniers détails pour vous offrir la meilleure expérience possible. Le lancement est prévu pour le premier trimestre 2026. Inscrivez-vous à la liste d'attente pour être le premier informé !</div>
+                </details>
+                <!-- Question 2 -->
+                <details class="faq-item">
+                    <summary>
+                        <span>Y aura-t-il une version gratuite ?</span>
+                        <svg class="w-6 h-6 faq-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </summary>
+                    <div class="faq-content">Oui ! Fundamental proposera une version gratuite qui vous donnera accès aux modules d'apprentissage de base et au budget planner. Le Mode PRO, les parcours de vie avancés et l'accès illimité à l'IA Fundy seront disponibles dans notre offre payante.</div>
+                </details>
+                <!-- Question 3 -->
+                <details class="faq-item">
+                    <summary>
+                        <span>Quelle est votre approche de la sécurité des données ?</span>
+                        <svg class="w-6 h-6 faq-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </summary>
+                    <div class="faq-content">La sécurité et la confidentialité de vos données sont notre priorité absolue. Nous n'avons pas besoin de nous connecter à vos comptes bancaires. Toutes les informations que vous entrez (budget, projets) sont chiffrées et anonymisées. Nous ne vendrons jamais vos données.</div>
+                </details>
+                <!-- Question 4 -->
+                <details class="faq-item">
+                    <summary>
+                        <span>Qu'est-ce que le "Mois de Mode PRO offert" ?</span>
+                        <svg class="w-6 h-6 faq-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </summary>
+                    <div class="faq-content">En vous inscrivant sur notre liste d'attente, vous recevrez un code lors du lancement officiel. Ce code vous donnera accès gratuitement à 100% des fonctionnalités de Fundamental, y compris le générateur de parcours PRO et tous les outils d'analyse IA, pendant 30 jours.</div>
+                </details>
+            </div>
+        </div>
+    </section>
+    <!-- Fin Section FAQ -->
+
+    <!-- Final CTA Section -->
+    <section id="signup" class="py-20 bg-slate-800/50">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 animate-on-scroll">Rejoignez l'accès anticipé</h2>
+            <p class="text-lg text-slate-400 max-w-2xl mx-auto mb-8 animate-on-scroll delay-1">Inscrivez-vous pour être parmi les premiers informés et bénéficiez d'<strong class="text-indigo-300">1 mois de Mode PRO offert</strong> au lancement.</p>
+            <div class="max-w-md mx-auto animate-on-scroll delay-2">
+                <form id="signup-form-footer">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <input type="email" id="email-footer" class="w-full flex-grow bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Votre adresse e-mail" required aria-label="Adresse e-mail">
+                        <button type="submit" id="submit-footer" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition whitespace-nowrap btn-click-effect" disabled>Rejoindre l'accès anticipé</button>
+                    </div>
+                    <div class="flex items-center space-x-3 mt-4 text-left">
+                        <input type="checkbox" id="terms-footer" name="terms" class="w-4 h-4 text-indigo-600 bg-slate-700 border-slate-600 rounded focus:ring-indigo-500 focus:ring-2 cursor-pointer" aria-label="Accepter de recevoir des e-mails de mise à jour">
+                        <label for="terms-footer" class="text-sm text-slate-400 cursor-pointer">J'accepte de recevoir des e-mails de mise à jour et d'être prévenu du lancement.</label>
+                    </div>
+                </form>
+                <div id="signup-success-footer" class="hidden mt-4 p-4 bg-slate-800 border border-slate-700 rounded-lg text-sm text-center">
+                    <h4 class="font-bold text-lg text-green-300 mb-2">Bienvenue ! ✨</h4>
+                    <div class="social-proof-text text-sm text-indigo-200 mb-4"></div>
+                    <p class="text-slate-300 mb-4">Votre accès est confirmé. En attendant le lancement, commencez votre parcours avec notre module découverte gratuit :</p>
+                    <p class="font-semibold text-white mb-4">"Les 3 Piliers d'un Budget Sain"</p>
+                    <a href="/module-decouverte" target="_blank" rel="noopener noreferrer" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition btn-click-effect mb-6">Commencer le module</a>
+                    <hr class="border-slate-700 mb-4">
+                    <p class="text-slate-400 mb-4">En attendant, aidez-nous à passer le mot !</p>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="linkedin-share-btn flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                            <span>Partager</span>
+                        </a>
+                        <button type="button" id="copy-link-footer" class="copy-link-btn flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-4 rounded-lg transition">Copier le lien</button>
+                    </div>
+                </div>
+                <!-- NOUVEAU: Étape de segmentation -->
+                <div id="signup-segment-footer" class="hidden mt-4 p-4 bg-slate-800 border border-slate-700 rounded-lg text-sm">
+                    <h4 class="font-bold text-lg text-white mb-1">Merci pour votre inscription !</h4>
+                    <p class="text-slate-400 mb-4">Une dernière étape : qui êtes-vous ?</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button class="segment-button text-left p-3 rounded-lg" data-segment="student">🎓 Étudiant</button>
+                        <button class="segment-button text-left p-3 rounded-lg" data-segment="team">👥 Équipe d'entreprise</button>
+                        <button class="segment-button text-left p-3 rounded-lg" data-segment="young-active">💼 Jeune Actif</button>
+                        <button class="segment-button text-left p-3 rounded-lg" data-segment="freelance">💻 Freelance</button>
+                    </div>
+                </div>
+                <div id="signup-loading-footer" class="hidden mt-4 flex items-center justify-center gap-2 text-slate-400">
+                    <div class="loader !w-5 !h-5"></div>
+                    <span class="loading-text">Enregistrement...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800">
+        <div class="container mx-auto px-6 py-8 text-center text-slate-500 text-sm">
+            <!-- NOUVEAU: Liens Sociaux -->
+            <div class="flex justify-center items-center gap-6 mb-6">
+                <a href="https://www.linkedin.com/company/107381398" target="_blank" rel="noopener noreferrer" class="text-slate-500 hover:text-indigo-400 transition" aria-label="LinkedIn">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+                <!-- Laissez de la place pour d'autres icônes si nécessaire -->
+            </div>
+            <!-- FIN NOUVEAU -->
+            <p>&copy; 2025 Fundamental. Bientôt disponible.</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Signup Form Logic ---
+        /**
+         * Cette fonction gère l'inscription à la liste d'attente pour un formulaire donné.
+         * Elle affiche un indicateur de chargement, appelle Firebase et gère l'affichage du message de succès ou de l'étape de segmentation.
+         * Elle enregistre également l'ID du document créé dans le stockage local pour conserver l'état entre les rechargements.
+         * @param {string} formId - ID du formulaire d'inscription (ex: 'signup-form-hero')
+         * @param {string} emailInputId - ID du champ email
+         * @param {string} successMsgId - ID du conteneur du message de succès
+         * @param {string} loadingMsgId - ID du conteneur du message de chargement
+         * @param {string} segmentMsgId - ID du conteneur pour la segmentation
+         */
+        const handleSignup = async (formId, emailInputId, successMsgId, loadingMsgId, segmentMsgId) => {
+            const form = document.getElementById(formId);
+            const emailInput = document.getElementById(emailInputId);
+            const successMsg = document.getElementById(successMsgId);
+            const loadingMsg = document.getElementById(loadingMsgId);
+            const segmentMsg = document.getElementById(segmentMsgId);
+            if (!form || !emailInput || !successMsg || !loadingMsg || !segmentMsg) return;
+            const submitButton = form.querySelector('button[type="submit"]');
+            if (!submitButton) return;
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = emailInput.value.trim();
+                if (!email) return;
+                submitButton.disabled = true;
+                loadingMsg.classList.remove('hidden');
+                successMsg.classList.add('hidden');
+                segmentMsg.classList.add('hidden');
+                try {
+                    if (typeof window.addToWaitlist === 'function') {
+                        const docId = await window.addToWaitlist(email);
+                        // Enregistrer l'ID du document dans le stockage local pour ce formulaire
+                        try {
+                            localStorage.setItem(`waitlistDocId_${formId}`, docId);
+                        } catch (err) {
+                            console.warn('Stockage local indisponible : ', err);
+                        }
+                        // Réinitialiser le formulaire et afficher la segmentation
+                        loadingMsg.classList.add('hidden');
+                        form.classList.add('hidden');
+                        segmentMsg.classList.remove('hidden');
+                        segmentMsg.dataset.docId = docId;
+                        // Effacer le champ email
+                        emailInput.value = '';
+                    } else {
+                        throw new Error("La fonction d'inscription n'est pas prête.");
+                    }
+                } catch (error) {
+                    console.error("Échec de l'inscription: ", error);
+                    loadingMsg.classList.add('hidden');
+                    successMsg.innerHTML = `<span class="font-bold">Une erreur est survenue.</span><br>Veuillez réessayer.`;
+                    successMsg.classList.remove('hidden', 'bg-slate-800', 'border-slate-700', 'text-green-300');
+                    successMsg.classList.add('bg-red-500/10', 'border-red-500/30', 'text-red-300', 'p-3');
+                    submitButton.disabled = false;
+                }
+            });
+        };
+
+        /**
+         * Initialise la logique de segmentation après l'inscription.
+         * Lorsqu'un utilisateur clique sur un bouton de segment, le document correspondant est mis à jour dans Firestore.
+         * Le segment choisi est sauvegardé dans le stockage local et l'écran de succès est affiché.
+         * @param {string} segmentMsgId - ID du conteneur de segmentation
+         * @param {string} successMsgId - ID du conteneur du message de succès
+         */
+        const initSegmentation = (segmentMsgId, successMsgId) => {
+            const segmentMsg = document.getElementById(segmentMsgId);
+            const successMsg = document.getElementById(successMsgId);
+            if (!segmentMsg || !successMsg) return;
+            // Dictionnaires pour la preuve sociale et la traduction des segments
+            const segmentMap = {
+                student: 'étudiants',
+                team: 'équipes',
+                'young-active': 'jeunes actifs',
+                freelance: 'freelances'
+            };
+            const baseCount = {
+                student: 450,
+                team: 120,
+                'young-active': 630,
+                freelance: 210
+            };
+            const socialProofEl = successMsg.querySelector('.social-proof-text');
+            segmentMsg.addEventListener('click', async (e) => {
+                const button = e.target.closest('button[data-segment]');
+                if (!button) return;
+                const segment = button.dataset.segment;
+                const docId = segmentMsg.dataset.docId;
+                // Désactiver tous les boutons
+                segmentMsg.querySelectorAll('button').forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50');
+                });
+                button.innerHTML = "Enregistrement...";
+                // Met à jour la preuve sociale immédiatement
+                if (socialProofEl && segmentMap[segment]) {
+                    const randomAddition = Math.floor(Math.random() * 30);
+                    const count = baseCount[segment] + randomAddition;
+                    const segmentName = segmentMap[segment];
+                    socialProofEl.innerHTML = `Vous rejoignez <strong>${count}</strong> autres <strong>${segmentName}</strong> qui préparent leur avenir financier !`;
+                }
+                try {
+                    if (typeof window.updateWaitlistSegment === 'function' && docId && segment) {
+                        await window.updateWaitlistSegment(docId, segment);
+                    }
+                } catch (err) {
+                    console.error("Erreur de mise à jour du segment (non bloquant):", err);
+                }
+                // Enregistrer le segment dans le stockage local pour ce formulaire
+                try {
+                    localStorage.setItem(`waitlistSegment_${segmentMsgId}`, segment);
+                } catch (e) {
+                    console.warn('Stockage local indisponible : ', e);
+                }
+                // Afficher le message de succès et masquer la segmentation
+                segmentMsg.classList.add('hidden');
+                successMsg.classList.remove('hidden');
+            });
+        };
+
+        /**
+         * Initialise la logique de partage (copie de lien et partage LinkedIn) pour tous les blocs d'inscription.
+         */
+        const initShareButtons = () => {
+            const shareBlocks = document.querySelectorAll('[id^="signup-success-"]');
+            shareBlocks.forEach(block => {
+                const copyBtn = block.querySelector('.copy-link-btn');
+                const linkedInBtn = block.querySelector('.linkedin-share-btn');
+                const pageUrl = window.location.href;
+                // Configure le partage LinkedIn
+                if (linkedInBtn) {
+                    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`;
+                    linkedInBtn.href = linkedInUrl;
+                }
+                // Configure la copie de lien
+                if (copyBtn) {
+                    copyBtn.addEventListener('click', () => {
+                        const tempInput = document.createElement('textarea');
+                        tempInput.style.position = 'absolute';
+                        tempInput.style.left = '-9999px';
+                        tempInput.value = pageUrl;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        try {
+                            document.execCommand('copy');
+                            const originalText = copyBtn.innerHTML;
+                            copyBtn.innerHTML = 'Lien copié ! ✓';
+                            copyBtn.classList.add('bg-green-600', 'hover:bg-green-600');
+                            setTimeout(() => {
+                                copyBtn.innerHTML = originalText;
+                                copyBtn.classList.remove('bg-green-600', 'hover:bg-green-600');
+                            }, 2000);
+                        } catch (err) {
+                            console.error('Échec de la copie du lien: ', err);
+                            copyBtn.innerHTML = 'Échec de la copie';
+                        }
+                        document.body.removeChild(tempInput);
+                    });
+                }
+            });
+        };
+
+        /**
+         * Gère l'état d'affichage des formulaires, des segments et des messages de succès au chargement de la page.
+         * Si un utilisateur s'est déjà inscrit (docId présent en stockage local), on masque le formulaire et affiche
+         * la segmentation ou le message de succès selon le cas.
+         * @param {string} formId - ID du formulaire
+         * @param {string} successMsgId - ID du message de succès
+         * @param {string} segmentMsgId - ID de l'étape de segmentation
+         */
+        const restoreSignupState = (formId, successMsgId, segmentMsgId) => {
+            try {
+                const docId = localStorage.getItem(`waitlistDocId_${formId}`);
+                const segment = localStorage.getItem(`waitlistSegment_${segmentMsgId}`);
+                const form = document.getElementById(formId);
+                const successMsg = document.getElementById(successMsgId);
+                const segmentMsg = document.getElementById(segmentMsgId);
+                if (!form || !successMsg || !segmentMsg) return;
+                if (docId) {
+                    // Masquer le formulaire
+                    form.classList.add('hidden');
+                    // Si le segment n'est pas encore défini, afficher la segmentation
+                    if (!segment) {
+                        segmentMsg.classList.remove('hidden');
+                        segmentMsg.dataset.docId = docId;
+                    } else {
+                        // Sinon, afficher directement le message de succès
+                        segmentMsg.classList.add('hidden');
+                        // Générer la preuve sociale en fonction du segment enregistré
+                        const segmentMap = {
+                            student: 'étudiants',
+                            team: 'équipes',
+                            'young-active': 'jeunes actifs',
+                            freelance: 'freelances'
+                        };
+                        const baseCount = {
+                            student: 450,
+                            team: 120,
+                            'young-active': 630,
+                            freelance: 210
+                        };
+                        const socialProofEl = successMsg.querySelector('.social-proof-text');
+                        if (socialProofEl && segmentMap[segment]) {
+                            const randomAddition = Math.floor(Math.random() * 30);
+                            const count = baseCount[segment] + randomAddition;
+                            const segmentName = segmentMap[segment];
+                            socialProofEl.innerHTML = `Vous rejoignez <strong>${count}</strong> autres <strong>${segmentName}</strong> qui préparent leur avenir financier !`;
+                        }
+                        successMsg.classList.remove('hidden');
+                    }
+                }
+            } catch (e) {
+                console.warn('Impossible de restaurer l’état de l’inscription : ', e);
+            }
+        };
+
+        /**
+         * Gère l'activation/désactivation du bouton de soumission en fonction de la case à cocher.
+         * Assure que l'utilisateur ne peut pas cliquer sur le bouton tant que les conditions ne sont pas acceptées.
+         * @param {string} checkboxId - ID de la case à cocher
+         * @param {string} buttonId - ID du bouton de soumission
+         */
+        const initCheckboxToggle = (checkboxId, buttonId) => {
+            const checkbox = document.getElementById(checkboxId);
+            const button = document.getElementById(buttonId);
+            if (checkbox && button) {
+                const updateButtonState = () => {
+                    if (checkbox.checked) {
+                        button.disabled = false;
+                        button.classList.remove('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        button.disabled = true;
+                        button.classList.add('opacity-50', 'cursor-not-allowed');
+                    }
+                };
+                checkbox.addEventListener('change', updateButtonState);
+                updateButtonState();
+            }
+        };
+
+        /**
+         * Initialise l'effet de scroll du header : ajoute ou retire la classe 'scrolled' selon la position.
+         */
+        const initHeaderScroll = () => {
+            const header = document.getElementById('main-header');
+            if (!header) return;
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            }, { passive: true });
+        };
+
+        /**
+         * Initialise l'animation de défilement pour les éléments ayant la classe 'animate-on-scroll'.
+         */
+        const initScrollAnimations = () => {
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                        }
+                    });
+                }, { threshold: 0.1 });
+                animatedElements.forEach(el => observer.observe(el));
+            } else {
+                animatedElements.forEach(el => el.classList.add('is-visible'));
+            }
+        };
+
+        /**
+         * Initialise la navigation par onglets pour la section des fonctionnalités interactives.
+         */
+        const initFeatureTabs = () => {
+            const featuresNav = document.getElementById('interactive-features-nav');
+            const featuresContent = document.getElementById('interactive-features-content');
+            if (featuresNav && featuresContent) {
+                const tabButtons = featuresNav.querySelectorAll('.feature-tab-btn');
+                const contentPanes = featuresContent.querySelectorAll('.feature-content');
+                featuresNav.addEventListener('click', (e) => {
+                    const clickedButton = e.target.closest('.feature-tab-btn');
+                    if (!clickedButton) return;
+                    const targetId = clickedButton.dataset.featureTarget;
+                    const targetContent = document.getElementById(targetId);
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    clickedButton.classList.add('active');
+                    contentPanes.forEach(pane => pane.classList.remove('active'));
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                });
+            }
+        };
+
+        /**
+         * Assure qu'une seule section FAQ est ouverte à la fois.
+         */
+        const initFaqToggle = () => {
+            const allFaqItems = document.querySelectorAll('details.faq-item');
+            allFaqItems.forEach(item => {
+                item.addEventListener('toggle', (e) => {
+                    if (item.open) {
+                        allFaqItems.forEach(otherItem => {
+                            if (otherItem !== item && otherItem.open) {
+                                otherItem.open = false;
+                            }
+                        });
+                    }
+                });
+            });
+        };
+
+        /**
+         * Initialise la logique des onglets Mission/Fondateur.
+         */
+        const initMissionTabs = () => {
+            const missionTab = document.getElementById('mission-tab');
+            const founderTab = document.getElementById('founder-tab');
+            const missionContent = document.getElementById('mission-content');
+            const founderContent = document.getElementById('founder-content');
+            if (!missionTab || !founderTab || !missionContent || !founderContent) return;
+            missionTab.addEventListener('click', () => {
+                missionTab.classList.add('active');
+                founderTab.classList.remove('active');
+                missionContent.classList.add('active');
+                founderContent.classList.remove('active');
+            });
+            founderTab.addEventListener('click', () => {
+                founderTab.classList.add('active');
+                missionTab.classList.remove('active');
+                founderContent.classList.add('active');
+                missionContent.classList.remove('active');
+            });
+        };
+
+        /**
+         * Initialise l'effet de halo autour du curseur sur les appareils non tactiles.
+         */
+        const initCursorGlow = () => {
+            const glow = document.getElementById('cursor-glow');
+            if (glow) {
+                document.body.addEventListener('mousemove', (e) => {
+                    glow.style.left = `${e.clientX}px`;
+                    glow.style.top = `${e.clientY}px`;
+                });
+                document.body.addEventListener('mouseenter', () => {
+                    glow.style.opacity = '1';
+                });
+                document.body.addEventListener('mouseleave', () => {
+                    glow.style.opacity = '0';
+                });
+            }
+        };
+
+        /**
+         * Initialise l'animation du canvas de la section hero.
+         */
+        const initHeroAnimation = () => {
+            const canvas = document.getElementById('hero-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width = canvas.offsetWidth;
+            let height = canvas.offsetHeight;
+            canvas.width = width;
+            canvas.height = height;
+            let particles = [];
+            const particleCount = 60;
+            class Particle {
+                constructor() { this.reset(); this.y = Math.random() * height; }
+                reset() {
+                    this.x = Math.random() * width;
+                    this.y = height + Math.random() * 50;
+                    this.vx = Math.random() * 0.4 - 0.2;
+                    this.vy = -Math.random() * 0.2 - 0.05;
+                    this.baseRadius = Math.random() * 1.2 + 0.8;
+                    this.radius = this.baseRadius;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.x < 0 || this.x > width) this.vx *= -1;
+                    if (this.y < -15) this.reset();
+                }
+                draw() {
+                    const progress = Math.max(0, Math.min(1, 1 - (this.y / height)));
+                    this.radius = this.baseRadius + progress * 1.5;
+                    const hue = 220 + progress * 40;
+                    const lightness = 60 + progress * 10;
+                    const alpha = 0.2 + progress * 0.5;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `hsla(${hue}, 80%, ${lightness}%, ${alpha})`;
+                    ctx.fill();
+                }
+            }
+            const initParticles = () => {
+                particles = [];
+                for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+            };
+            const animate = () => {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animate);
+            };
+            window.addEventListener('resize', () => {
+                width = canvas.offsetWidth;
+                height = canvas.offsetHeight;
+                canvas.width = width;
+                canvas.height = height;
+                initParticles();
+            });
+            initParticles();
+            animate();
+        };
+
+        /* --------- Initialisation globale --------- */
+        // Initialiser les formulaires (soumission)
+        handleSignup('signup-form-hero', 'email-hero', 'signup-success-hero', 'signup-loading-hero', 'signup-segment-hero');
+        handleSignup('signup-form-footer', 'email-footer', 'signup-success-footer', 'signup-loading-footer', 'signup-segment-footer');
+        // Initialiser la segmentation (après soumission)
+        initSegmentation('signup-segment-hero', 'signup-success-hero');
+        initSegmentation('signup-segment-footer', 'signup-success-footer');
+        // Restaurer l'état des inscriptions (si déjà inscrits)
+        restoreSignupState('signup-form-hero', 'signup-success-hero', 'signup-segment-hero');
+        restoreSignupState('signup-form-footer', 'signup-success-footer', 'signup-segment-footer');
+        // Initialiser les autres composants
+        initShareButtons();
+        initCheckboxToggle('terms-hero', 'submit-hero');
+        initCheckboxToggle('terms-footer', 'submit-footer');
+        initHeaderScroll();
+        initScrollAnimations();
+        initFeatureTabs();
+        initFaqToggle();
+        initMissionTabs();
+        initCursorGlow();
+        initHeroAnimation();
+    });
+    </script>
+
+</body>
+</html>
